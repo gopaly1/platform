@@ -100,3 +100,7 @@ func (wsc *WebSocketClient) UserTyping(channelId, parentId string) {
 
 	wsc.SendMessage("user_typing", data)
 }
+
+func (wsc *WebSocketClient) GetStatuses() {
+	wsc.SendMessage("get_statuses", nil)
+}

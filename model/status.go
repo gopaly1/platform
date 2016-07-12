@@ -9,11 +9,10 @@ import (
 )
 
 const (
-	STATUS_OFFLINE      = "offline"
-	STATUS_AWAY         = "away"
-	STATUS_ONLINE       = "online"
-	STATUS_AWAY_TIMEOUT = 5 * 60 * 1000 // 5 minutes
-	STATUS_CACHE_SIZE   = 10000
+	STATUS_OFFLINE    = "offline"
+	STATUS_AWAY       = "away"
+	STATUS_ONLINE     = "online"
+	STATUS_CACHE_SIZE = 10000
 )
 
 type Status struct {
