@@ -134,6 +134,7 @@ func main() {
 
 		setDiagnosticId()
 		go runSecurityAndDiagnosticsJob()
+		go resetStatuses()
 
 		if complianceI := einterfaces.GetComplianceInterface(); complianceI != nil {
 			complianceI.StartComplianceDailyJob()
@@ -146,6 +147,12 @@ func main() {
 		<-c
 
 		api.StopServer()
+	}
+}
+
+func resetStatuses() {
+	if result := <-api.Srv.Store.Status().ResetAll(); result.Err != nil {
+		l4g.Error(utils.T("mattermost.reset_status.error"), result.Err.Error())
 	}
 }
 

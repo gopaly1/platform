@@ -166,7 +166,8 @@ export default {
         USER_REMOVED: 'user_removed',
         TYPING: 'typing',
         PREFERENCE_CHANGED: 'preference_changed',
-        EPHEMERAL_MESSAGE: 'ephemeral_message'
+        EPHEMERAL_MESSAGE: 'ephemeral_message',
+        STATUS_CHANGED: 'status_change'
     },
 
     UserUpdateEvents: {

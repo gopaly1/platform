@@ -54,7 +54,7 @@ func InitUser() {
 	BaseRoutes.Users.Handle("/newimage", ApiUserRequired(uploadProfileImage)).Methods("POST")
 	BaseRoutes.Users.Handle("/me", ApiAppHandler(getMe)).Methods("GET")
 	BaseRoutes.Users.Handle("/initial_load", ApiAppHandler(getInitialLoad)).Methods("GET")
-	BaseRoutes.Users.Handle("/status", ApiUserRequiredActivity(getStatuses, false)).Methods("POST")
+	BaseRoutes.Users.Handle("/status", ApiUserRequiredActivity(getStatuses, false)).Methods("GET")
 	BaseRoutes.Users.Handle("/direct_profiles", ApiUserRequired(getDirectProfiles)).Methods("GET")
 	BaseRoutes.Users.Handle("/profiles/{id:[A-Za-z0-9]+}", ApiUserRequired(getProfiles)).Methods("GET")
 	BaseRoutes.Users.Handle("/profiles_for_dm_list/{id:[A-Za-z0-9]+}", ApiUserRequired(getProfilesForDirectMessageList)).Methods("GET")
@@ -1950,30 +1950,18 @@ func updateUserNotify(c *Context, w http.ResponseWriter, r *http.Request) {
 }
 
 func getStatuses(c *Context, w http.ResponseWriter, r *http.Request) {
-	userIds := model.ArrayFromJson(r.Body)
-	if len(userIds) == 0 {
-		c.SetInvalidParam("getStatuses", "userIds")
-		return
-	}
-
-	if result := <-Srv.Store.User().GetProfileByIds(userIds); result.Err != nil {
+	if result := <-Srv.Store.Status().GetOnline(); result.Err != nil {
 		c.Err = result.Err
 		return
 	} else {
-		profiles := result.Data.(map[string]*model.User)
+		statuses := result.Data.([]*model.Status)
 
-		statuses := map[string]string{}
-		for _, profile := range profiles {
-			if profile.IsOffline() {
-				statuses[profile.Id] = model.USER_OFFLINE
-			} else if profile.IsAway() {
-				statuses[profile.Id] = model.USER_AWAY
-			} else {
-				statuses[profile.Id] = model.USER_ONLINE
-			}
+		statusMap := map[string]string{}
+		for _, s := range statuses {
+			statusMap[s.UserId] = s.Status
 		}
 
-		w.Write([]byte(model.MapToJson(statuses)))
+		w.Write([]byte(model.MapToJson(statusMap)))
 		return
 	}
 }
@@ -2306,7 +2294,7 @@ func resendVerification(c *Context, w http.ResponseWriter, r *http.Request) {
 		c.Err = error
 		return
 	} else {
-		if user.LastActivityAt > 0 {
+		if _, err := GetStatus(user.Id); err != nil {
 			go SendEmailChangeVerifyEmail(c, user.Id, user.Email, c.GetSiteURL())
 		} else {
 			go SendVerifyEmail(c, user.Id, user.Email, c.GetSiteURL())

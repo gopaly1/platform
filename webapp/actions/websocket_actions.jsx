@@ -112,6 +112,10 @@ function handleEvent(msg) {
         handleUserTypingEvent(msg);
         break;
 
+    case SocketEvents.STATUS_CHANGED:
+        handleStatusChangedEvent(msg);
+        break;
+
     default:
     }
 }
@@ -218,4 +222,8 @@ function handlePreferenceChangedEvent(msg) {
 
 function handleUserTypingEvent(msg) {
     GlobalActions.emitRemoteUserTypingEvent(msg.channel_id, msg.user_id, msg.data.parent_id);
+}
+
+function handleStatusChangedEvent(msg) {
+    UserStore.setStatus(msg.user_id, msg.data.status);
 }

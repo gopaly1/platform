@@ -117,7 +117,7 @@ export default class LoggedIn extends React.Component {
 
         // Get all statuses regularally. (Soon to be switched to websocket)
         AsyncClient.getStatuses();
-        this.intervalId = setInterval(() => AsyncClient.getStatuses(), CLIENT_STATUS_INTERVAL);
+        //this.intervalId = setInterval(() => AsyncClient.getStatuses(), CLIENT_STATUS_INTERVAL);
 
         // ???
         $('body').on('mouseenter mouseleave', '.post', function mouseOver(ev) {
@@ -165,7 +165,7 @@ export default class LoggedIn extends React.Component {
 
     componentWillUnmount() {
         $('#root').attr('class', '');
-        clearInterval(this.intervalId);
+        //clearInterval(this.intervalId);
 
         Websockets.close();
         UserStore.removeChangeListener(this.onUserChanged);

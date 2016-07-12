@@ -940,7 +940,7 @@ func (s SqlChannelStore) GetForExport(teamId string) StoreChannel {
 		_, err := s.GetReplica().Select(&data, "SELECT * FROM Channels WHERE TeamId = :TeamId AND DeleteAt = 0 AND Type = 'O'", map[string]interface{}{"TeamId": teamId})
 
 		if err != nil {
-			result.Err = model.NewLocAppError("SqlChannelStore.GetAllChannels", "store.sql_channel.get_for_export.app_error", nil, "teamId="+teamId+", err="+err.Error())
+			result.Err = model.NewLocAppError("SqlChannelStore.GetForExport", "store.sql_channel.get_for_export.app_error", nil, "teamId="+teamId+", err="+err.Error())
 		} else {
 			result.Data = data
 		}

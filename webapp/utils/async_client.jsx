@@ -707,21 +707,12 @@ export function getMe() {
 }
 
 export function getStatuses() {
-    const preferences = PreferenceStore.getCategory(Constants.Preferences.CATEGORY_DIRECT_CHANNEL_SHOW);
-
-    const teammateIds = [];
-    for (const [name, value] of preferences) {
-        if (value === 'true') {
-            teammateIds.push(name);
-        }
-    }
-
-    if (isCallInProgress('getStatuses') || teammateIds.length === 0) {
+    if (isCallInProgress('getStatuses')) {
         return;
     }
 
     callTracker.getStatuses = utils.getTimestamp();
-    Client.getStatuses(teammateIds,
+    Client.getStatuses(
         (data) => {
             callTracker.getStatuses = 0;
 
