@@ -4,6 +4,8 @@
 package api
 
 import (
+	"net/http"
+
 	l4g "github.com/alecthomas/log4go"
 	"github.com/mattermost/platform/model"
 	"github.com/mattermost/platform/utils"
@@ -11,6 +13,43 @@ import (
 
 func InitStatus() {
 	l4g.Debug(utils.T("api.status.init.debug"))
+
+	BaseRoutes.Users.Handle("/status", ApiUserRequiredActivity(getStatusesHttp, false)).Methods("GET")
+	BaseRoutes.WebSocket.Handle("get_statuses", ApiWebSocketHandler(getStatusesWebSocket))
+}
+
+func getStatusesHttp(c *Context, w http.ResponseWriter, r *http.Request) {
+	statusMap, err := GetAllStatuses()
+	if err != nil {
+		c.Err = err
+		return
+	}
+
+	w.Write([]byte(model.StringInterfaceToJson(statusMap)))
+}
+
+func getStatusesWebSocket(req *model.WebSocketRequest) (map[string]interface{}, *model.AppError) {
+	statusMap, err := GetAllStatuses()
+	if err != nil {
+		return nil, err
+	}
+
+	return statusMap, nil
+}
+
+func GetAllStatuses() (map[string]interface{}, *model.AppError) {
+	if result := <-Srv.Store.Status().GetOnlineAway(); result.Err != nil {
+		return nil, result.Err
+	} else {
+		statuses := result.Data.([]*model.Status)
+
+		statusMap := map[string]interface{}{}
+		for _, s := range statuses {
+			statusMap[s.UserId] = s.Status
+		}
+
+		return statusMap, nil
+	}
 }
 
 func SetStatusOnline(userId string, sessionId string) {

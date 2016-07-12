@@ -267,6 +267,6 @@ type EmojiStore interface {
 type StatusStore interface {
 	SaveOrUpdate(status *model.Status) StoreChannel
 	Get(userId string) StoreChannel
-	GetOnline() StoreChannel
+	GetOnlineAway() StoreChannel
 	ResetAll() StoreChannel
 }

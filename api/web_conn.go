@@ -48,7 +48,6 @@ func NewWebConn(c *Context, ws *websocket.Conn) *WebConn {
 
 func (c *WebConn) readPump() {
 	defer func() {
-		go SetStatusOffline(c.UserId)
 		hub.Unregister(c)
 		c.WebSocket.Close()
 	}()

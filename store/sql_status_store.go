@@ -33,6 +33,7 @@ func (s SqlStatusStore) UpgradeSchemaIfNeeded() {
 
 func (s SqlStatusStore) CreateIndexesIfNotExists() {
 	s.CreateIndexIfNotExists("idx_status_user_id", "Status", "UserId")
+	s.CreateIndexIfNotExists("idx_status_status", "Status", "Status")
 }
 
 func (s SqlStatusStore) SaveOrUpdate(status *model.Status) StoreChannel {
@@ -89,14 +90,14 @@ func (s SqlStatusStore) Get(userId string) StoreChannel {
 	return storeChannel
 }
 
-func (s SqlStatusStore) GetOnline() StoreChannel {
+func (s SqlStatusStore) GetOnlineAway() StoreChannel {
 	storeChannel := make(StoreChannel)
 
 	go func() {
 		result := StoreResult{}
 
 		var statuses []*model.Status
-		if _, err := s.GetReplica().Select(&statuses, "SELECT * FROM Status WHERE Status = 'online'"); err != nil {
+		if _, err := s.GetReplica().Select(&statuses, "SELECT * FROM Status WHERE Status = 'online' OR Status = 'away'"); err != nil {
 			result.Err = model.NewLocAppError("SqlStatusStore.GetOnline", "store.sql_status.get_online.app_error", nil, err.Error())
 		} else {
 			result.Data = statuses
