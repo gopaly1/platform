@@ -207,7 +207,7 @@ func doSecurityAndDiagnostics() {
 					v.Set(utils.PROP_DIAGNOSTIC_USER_COUNT, strconv.FormatInt(ucr.Data.(int64), 10))
 				}
 
-				if ucr := <-api.Srv.Store.User().GetTotalActiveUsersCount(); ucr.Err == nil {
+				if ucr := <-api.Srv.Store.Status().GetTotalActiveUsersCount(); ucr.Err == nil {
 					v.Set(utils.PROP_DIAGNOSTIC_ACTIVE_USER_COUNT, strconv.FormatInt(ucr.Data.(int64), 10))
 				}
 

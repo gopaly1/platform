@@ -126,3 +126,24 @@ func (s SqlStatusStore) ResetAll() StoreChannel {
 
 	return storeChannel
 }
+
+func (s SqlStatusStore) GetTotalActiveUsersCount() StoreChannel {
+	storeChannel := make(StoreChannel)
+
+	go func() {
+		result := StoreResult{}
+
+		time := model.GetMillis() - (1000 * 60 * 60 * 24)
+
+		if count, err := s.GetReplica().SelectInt("SELECT COUNT(UserId) FROM Status WHERE LastActivityAt > :Time", map[string]interface{}{"Time": time}); err != nil {
+			result.Err = model.NewLocAppError("SqlStatusStore.GetTotalActiveUsersCount", "store.sql_status.get_total_active_users_count.app_error", nil, err.Error())
+		} else {
+			result.Data = count
+		}
+
+		storeChannel <- result
+		close(storeChannel)
+	}()
+
+	return storeChannel
+}

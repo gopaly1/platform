@@ -150,7 +150,6 @@ type UserStore interface {
 	UpdateFailedPasswordAttempts(userId string, attempts int) StoreChannel
 	GetForExport(teamId string) StoreChannel
 	GetTotalUsersCount() StoreChannel
-	GetTotalActiveUsersCount() StoreChannel
 	GetSystemAdminProfiles() StoreChannel
 	PermanentDelete(userId string) StoreChannel
 	AnalyticsUniqueUserCount(teamId string) StoreChannel
@@ -269,4 +268,5 @@ type StatusStore interface {
 	Get(userId string) StoreChannel
 	GetOnlineAway() StoreChannel
 	ResetAll() StoreChannel
+	GetTotalActiveUsersCount() StoreChannel
 }
